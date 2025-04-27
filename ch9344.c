@@ -77,7 +77,7 @@ static DEFINE_MUTEX(ch9344_minors_lock);
 
 
 static void ch9344_tty_set_termios(struct tty_struct *tty,
-                                   struct ktermios *termios_old);
+                                   const struct ktermios *termios_old);
 
 static int ch9344_get_portnum(int index);
 
@@ -736,7 +736,7 @@ static inline void *tty_get_portdata(struct ch9344_ttyport *port)
 	return (port->portdata);
 }
 
-static void ch9344_port_dtr_rts(struct tty_port *port, int raise)
+static void ch9344_port_dtr_rts(struct tty_port *port, bool raise)
 {
 	struct ch9344_ttyport *ttyport = container_of(port, struct ch9344_ttyport, port);
 	struct ch9344 *ch9344 = tty_get_portdata(ttyport);
@@ -849,8 +849,8 @@ static void ch9344_tty_close(struct tty_struct *tty, struct file *filp)
 	}
 }
 
-static int ch9344_tty_write(struct tty_struct *tty,
-                            const unsigned char *buf, int count)
+static ssize_t ch9344_tty_write(struct tty_struct *tty,
+                                const u8 *buf, size_t count)
 {
 	struct ch9344 *ch9344 = tty->driver_data;
 	int stat;
@@ -1468,7 +1468,7 @@ u8 cal_recv_tmt(__le32 bd)
 }
 
 static void ch9344_tty_set_termios(struct tty_struct *tty,
-                                   struct ktermios *termios_old)
+                                   const struct ktermios *termios_old)
 {
 	struct ch9344 *ch9344 = tty->driver_data;
 	struct ktermios *termios = &tty->termios;
